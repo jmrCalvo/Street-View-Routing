@@ -9,12 +9,12 @@ class cross{
 
   private float lat;
   private float lon;
-  private TreeSet crosses;
+  private TreeSet child_crosses;
 
   public cross(float latitude,float longitude){
     lat=latitude;
     lon=longitude;
-    crosses=new TreeSet();
+    child_crosses=new TreeSet();
   }
   public void SetLat(float latitude){
     lat=latitude;
@@ -32,18 +32,21 @@ class cross{
 }
 
 class city{
-  private float n_cross;
-  private float n_street;
+  private int n_cross;
+  private int n_street;
   private double v_time;
   private int n_cars;
   private cross begining;
+  private TreeSet crosses;
 
-  public city(){}
+  public city(){
+    crosses=new TreeSet();
+  }
 
-  public void setNCross(float n){
+  public void setNCross(int n){
     n_cross=n;
   }
-  public void setNStreet(float n){
+  public void setNStreet(int n){
     n_street=n;
   }
   public void setVTime(double n){
@@ -55,20 +58,21 @@ class city{
   public void setBegining(float la,float lo){
     begining=new cross(la,lo);
   }
+  public void setCrosses(cross c){
+    crosses.add(c);
+  }
+
+  public int getNCrosses(){return n_cross;}
 
 }
 
 
 public class car_schedule {
 
-
-
-
-
   public static void Metadata(String first_line, city the_city){
     String []separate=first_line.split("\\s");
-    the_city.setNCross(Float.parseFloat(separate[0]));
-    the_city.setNStreet(Float.parseFloat(separate[1]));
+    the_city.setNCross(Integer.parseInt(separate[0]));
+    the_city.setNStreet(Integer.parseInt(separate[1]));
     the_city.setVTime(Double.parseDouble(separate[2]));
     the_city.setNCar(Integer.parseInt(separate[3]));
     float f_lat=Float.parseFloat(separate[4]);
@@ -80,11 +84,14 @@ public class car_schedule {
       String line;
       FileReader f = new FileReader(file);
       BufferedReader buffer = new BufferedReader(f);
-      city the_city=new city();
+      city the_city = new city();
       Metadata(buffer.readLine(),the_city);
+      int n_line=1;
+      int max_line=the_city.getNCrosses();
       while((line = buffer.readLine())!=null) {
-          System.out.println(line);
-          cross c=new cross(3.5f,5.6f);
+          if(n_line <= max_line){System.out.println(line);}
+          // cross c=new cross(3.5f,5.6f);
+          n_line++;
       }
       buffer.close();
   }
