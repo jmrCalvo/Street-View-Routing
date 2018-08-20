@@ -3,20 +3,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
- class LeerFichero {
+ class readFile {
 
-    public static void muestraContenido(String archivo) throws FileNotFoundException, IOException {
-        String cadena;
-        FileReader f = new FileReader(archivo);
-        BufferedReader b = new BufferedReader(f);
-        while((cadena = b.readLine())!=null) {
-            System.out.println(cadena);
+    public static void saveData(String file) throws FileNotFoundException, IOException {
+        String line;
+        FileReader f = new FileReader(file);
+        BufferedReader buffer = new BufferedReader(f);
+        while((line = buffer.readLine())!=null) {
+            System.out.println(line);
         }
-        b.close();
+        buffer.close();
     }
 
     public static void main(String[] args) throws IOException {
-        muestraContenido("paris_54000.txt");
+        saveData("paris_54000.txt");
     }
 
 }
