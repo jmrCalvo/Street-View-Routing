@@ -106,6 +106,14 @@ class street{
     double solution=(length_street)/((Math.pow(10,passed_times))*cost_time*end.isclosed());
     return solution;
   }
+
+  public int getCostTime(){
+    return cost_time;
+  }
+  public cross getCrossEnd(){
+    return end;
+  }
+
   @Override
   public String toString(){
     String ID=String.valueOf(end.GetID())+" ";
@@ -118,7 +126,7 @@ class street{
 class city{
   private int n_cross;
   private int n_street;
-  private double v_time;
+  private int v_time;
   private int n_cars;
   private cross begining;
   private Set<cross> crosses;
@@ -134,7 +142,7 @@ class city{
   public void setNStreet(int n){
     n_street=n;
   }
-  public void setVTime(double n){
+  public void setVTime(int n){
     v_time=n;
   }
   public void setNCar(int n){
@@ -164,6 +172,82 @@ class city{
   }
 
 }
+class car{
+
+  private ArrayList<ArrayList <string>> movements = new ArrayList<ArrayList <string>>();
+  private double time_spent;
+  private city city_chosen;
+  private int n_cars;
+
+  public car(n_car,the_city){
+    time_spent=0;
+    n_cars=n_car;
+    for (int i=0;i<n_car;i++){
+      ArrayList <String> n_movement=new ArrayList <String>();
+      n_movement.add("0");
+      movements.add(n_movement);
+      city_chosen=the_city;
+    }
+  }
+
+
+  public void addTime(int n){
+    time_spent=time_spent-n;
+  }
+
+  public Bool isway(){
+    for (int i=0;i<n_cars;i++){
+        if(!movements[i].isEmpty()){
+            int last=movements[i].size()-1;
+            String id=movements[i][last]
+            cross last_c=city_chosen.getcross(id);
+            Set<street> s=last_c.GetChildStreetss();
+            for(street t : s){
+              int stimation= t.getCostTime();
+              if(stimation>=time_spent){return true;}
+            }
+        }
+      }
+      return false;
+  }
+
+  public void choose(int car, double max,cross cend,cross cstart,int selected_car){
+    int last=movements[car].size()-1;
+    String id=movements[i][last]
+    cross last_c=city_chosen.getcross(id);
+    Set<street> s=last_c.GetChildStreetss();
+    for(street t : s){
+      double result=t.average()
+
+      if(result >= max && time_spent >= t.getCostTime()){
+        cstart=last_c;
+        cend=t.getCrossEnd();
+        max=result;
+        selected_car=car;
+      }
+
+    }
+  }
+
+  public void travel(){
+    cross c_last, c_start;
+    int selected_car;
+    double max=0.0;
+    if(isway()){
+      for (int i=0;i<n_cars;i++){
+          choose(i,max,c_last,c_start,selected_car);
+      }
+    }
+    else{
+
+    }
+
+  }
+
+
+}
+
+
 
 
 
@@ -173,7 +257,7 @@ public class car_schedule {
     String []separate=first_line.split("\\s");
     the_city.setNCross(Integer.parseInt(separate[0]));
     the_city.setNStreet(Integer.parseInt(separate[1]));
-    the_city.setVTime(Double.parseDouble(separate[2]));
+    the_city.setVTime(Integer.parseInt(separate[2]));
     the_city.setNCar(Integer.parseInt(separate[3]));
     float f_lat=Float.parseFloat(separate[4]);
     float f_long=Float.parseFloat(separate[0]);
