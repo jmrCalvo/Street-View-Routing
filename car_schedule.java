@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.lang.Math;
 
 
   // System.out.println(c.GetLat()+"  "+c.GetLong());
@@ -12,11 +13,13 @@ class cross{
   private float lat;
   private float lon;
   private Set<cross> child_crosses;
+  private Set<street> child_streets;
 
   public cross(float latitude,float longitude,int Id){
     lat=latitude;
     lon=longitude;
     child_crosses=new HashSet<>();
+    child_streets=new HashSet<>();
     ID=Id;
   }
   public void SetLat(float latitude){
@@ -27,6 +30,9 @@ class cross{
   }
   public void addChildCrosses(cross c){
       child_crosses.add(c);
+  }
+  public void addChildStreets(street c){
+      child_streets.add(c);
   }
   public float GetLat(){
     return lat;
@@ -40,6 +46,21 @@ class cross{
   public Set<cross> GetChildCrosses(){
     return child_crosses;
   }
+  public Set<street> GetChildStreetss(){
+    return child_streets;
+  }
+  public int isclosed(){
+    if (child_crosses == null || child_crosses.isEmpty()){return 3;}
+    else{
+      if(child_crosses.size()==1){
+        for(cross c: child_crosses){
+          if(c == this){return 3;}
+        }
+      }
+    }
+    return 1;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -58,24 +79,36 @@ class cross{
     String lat=Float.toString(this.GetLat());
     String lon=Float.toString(this.GetLong());
     String i=String.valueOf(this.GetID());
-    String id=i+" "+lat+" "+lon;
+    String id=i+" "+lat+" "+lon+"   ";
+    for (street c:street){id=id+c;}
     return id;
   }
 }
+
+
 class street{
-  private cross start;
   private cross end;
-  private int direction;
   private int cost_time;
   private int length_street;
 
-  private int passed_times=1;
+  private int passed_times;
 
-  public street(cross start_point,cross end_point,int dir,int cost,int length){
-
+  public street(cross end_point,int cost,int length){
+    end=end_point;
+    cost_time=cost;
+    length_street=length;
+    passed_times=1;
   }
-  public int getClosed(){
-    return 0;
+  public void passed(){
+    passed_times++;
+  }
+  public double average(){
+    double solution=(length_street)/((Math.pow(10,passed_times))*cost_time*end.isclosed());
+    return solution;
+  }
+  @Override
+  public String toString(){
+    
   }
 }
 
@@ -88,6 +121,7 @@ class city{
   private int n_cars;
   private cross begining;
   private Set<cross> crosses;
+  private Set<street> streets;
 
   public city(){
     crosses=new HashSet<>();
@@ -106,7 +140,7 @@ class city{
     n_cars=n;
   }
   public void setBegining(float la,float lo){
-    begining=new cross(la,lo,1);
+    begining=new cross(la,lo,0);
   }
   public void setCrosses(cross c){
     crosses.add(c);
@@ -144,6 +178,16 @@ public class car_schedule {
     float f_long=Float.parseFloat(separate[0]);
     the_city.setBegining(f_lat,f_long);
   }
+  public static void onedirection(cross cstart,cross cend,street s){
+    cstart.addChildCrosses(cend);
+    cstart.addChildStreets(s);
+  }
+  public static void bidirection(cross cstart,cross cend,street s1,street s2){
+    cstart.addChildCrosses(cend);
+    cstart.addChildStreets(s1);
+    cend.addChildCrosses(cstart);
+    cend.addChildStreets(s2);
+  }
 
   public static void saveData(String file) throws FileNotFoundException, IOException {
       String line;
@@ -158,17 +202,33 @@ public class car_schedule {
             String []separate=line.split("\\s");
             lat=Float.parseFloat(separate[0]);
             lon=Float.parseFloat(separate[1]);
-            cross c=new cross(lat,lon,n_line);
+            cross c=new cross(lat,lon,n_line-1);
             the_city.setCrosses(c);
           }
           else{
             System.out.println(line);
+            String []separate=line.split("\\s");
+            int start=Integer.parseInt(separate[0]);
+            int end=Integer.parseInt(separate[1]);
+            int direction=Integer.parseInt(separate[2]);
+            int cost=Integer.parseInt(separate[3]);
+            int length=Integer.parseInt(separate[4]);
+            cross cstart=the_city.getcross(start);
+            cross cend=the_city.getcross(end);
+            street s1=new street(cend,cost,length);
+            if(direction==1){
+              onedirection(cstart,cend,s1);
+            }
+            else{
+              street s2=new street(cstart,cost,length);
+              bidirection(cstart,cend,s1,s2);
+            }
           }
           n_line++;
       }
       buffer.close();
 
-      the_city.imprimir();
+        //the_city.imprimir();
   }
 
   public static void main(String[] args) throws IOException {
