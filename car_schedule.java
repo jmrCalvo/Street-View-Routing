@@ -79,8 +79,8 @@ class cross{
     String lat=Float.toString(this.GetLat());
     String lon=Float.toString(this.GetLong());
     String i=String.valueOf(this.GetID());
-    String id=i+" "+lat+" "+lon+"   ";
-    for (street c:street){id=id+c;}
+    String id=i+" "+lat+","+lon+"   ";
+    for (street c: child_streets){id=id+c.toString();}
     return id;
   }
 }
@@ -108,7 +108,8 @@ class street{
   }
   @Override
   public String toString(){
-    
+    String ID=String.valueOf(end.GetID())+" ";
+    return (ID);
   }
 }
 
@@ -151,7 +152,7 @@ class city{
 
   public void imprimir(){
       for(cross c: crosses){
-        System.out.println(c);
+        System.out.println(c.toString());
       }
   }
 
@@ -189,11 +190,10 @@ public class car_schedule {
     cend.addChildStreets(s2);
   }
 
-  public static void saveData(String file) throws FileNotFoundException, IOException {
+  public static void saveData(String file,city the_city) throws FileNotFoundException, IOException {
       String line;
       FileReader f = new FileReader(file);
       BufferedReader buffer = new BufferedReader(f);
-      city the_city = new city();
       Metadata(buffer.readLine(),the_city);
       int n_line=1;float lat=0.0f,lon=0.0f;
       int max_line=the_city.getNCrosses();
@@ -206,7 +206,7 @@ public class car_schedule {
             the_city.setCrosses(c);
           }
           else{
-            System.out.println(line);
+            //System.out.println(line);
             String []separate=line.split("\\s");
             int start=Integer.parseInt(separate[0]);
             int end=Integer.parseInt(separate[1]);
@@ -228,11 +228,12 @@ public class car_schedule {
       }
       buffer.close();
 
-        //the_city.imprimir();
+        the_city.imprimir();
   }
-
   public static void main(String[] args) throws IOException {
-      saveData("paris_54000.txt");
+      city the_city = new city();
+      saveData("paris_54000.txt",the_city);
+
   }
 
 }
