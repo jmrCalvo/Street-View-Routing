@@ -6,7 +6,10 @@ import java.util.*;
 import java.lang.Math;
 
 
-  // System.out.println(c.GetLat()+"  "+c.GetLong());
+//The class cross save all the useful information of, saving the ID which is the
+//identification  of each cross, lat and lon are the latitude and longitude of the
+//cross and also there are two extra set which is save the crosses that the car
+//can move to, and child_streets are the streets which start in that cross.
 class cross{
 
   private  int ID;
@@ -15,6 +18,7 @@ class cross{
   private Set<cross> child_crosses;
   private Set<street> child_streets;
 
+  //the constructor of the class
   public cross(float latitude,float longitude,int Id){
     lat=latitude;
     lon=longitude;
@@ -22,18 +26,21 @@ class cross{
     child_streets=new HashSet<>();
     ID=Id;
   }
+  //the set methods
   public void SetLat(float latitude){
     lat=latitude;
   }
   public void SetLong(float longitude){
     lon=longitude;
   }
+  //the methods to add crosses and streets to the set
   public void addChildCrosses(cross c){
       child_crosses.add(c);
   }
   public void addChildStreets(street c){
       child_streets.add(c);
   }
+  //the get methods
   public float GetLat(){
     return lat;
   }
@@ -49,8 +56,12 @@ class cross{
   public Set<street> GetChildStreetss(){
     return child_streets;
   }
+  //it will return if the cross does not have cross childrens, if that retrun a
+  //integer elevate to then do the average, this happen also if the children is
+  //the father too. If it has more than one children and it is not the father it
+  //will return a low valor
   public int isclosed(){
-    if (child_crosses == null || child_crosses.isEmpty()){return 3;}
+    if (child_crosses == null || child_crosses.isEmpty()){return 10;}
     else{
       if(child_crosses.size()==1){
         for(cross c: child_crosses){
@@ -58,10 +69,10 @@ class cross{
         }
       }
     }
-    return 1;
+    return 10;
   }
 
-
+//the methods to manage good the set
   @Override
   public boolean equals(Object o) {
     if (this == o)return true;
@@ -73,7 +84,6 @@ class cross{
   public int hashCode(){
     return ID;
   }
-
   @Override
   public String toString() {
     String lat=Float.toString(this.GetLat());
@@ -85,35 +95,43 @@ class cross{
   }
 }
 
+//the class street save the data usefull, even the start point of the street is
+//not relevant for save the information, in a way that only it is needed the end.
 
 class street{
   private cross end;
   private int cost_time;
   private int length_street;
-
   private int passed_times;
 
+  //the constructor
   public street(cross end_point,int cost,int length){
     end=end_point;
     cost_time=cost;
     length_street=length;
     passed_times=1;
   }
+
+  //this method is important to then, do an according estimation of the cost of
+  //that street
   public void passed(){
     passed_times++;
   }
+  //this is the most important method, it give the stimation of each street, knowing
+  //if it a closed street, if it has passed yet, the cost of time and the length
+  //street which has to be the greater value possible.
   public double average(){
     double solution=(length_street)/((Math.pow(10,passed_times))*cost_time*end.isclosed());
     return solution;
   }
-
+  //the get methods
   public int getCostTime(){
     return cost_time;
   }
   public cross getCrossEnd(){
     return end;
   }
-
+  //override the method to string
   @Override
   public String toString(){
     String ID=String.valueOf(end.GetID())+" ";
@@ -121,8 +139,8 @@ class street{
   }
 }
 
-
-
+//this is the class which join all the information given, since the first line which
+//will determinate all the information which will be use in future methods
 class city{
   private int n_cross;
   private int n_street;
@@ -130,12 +148,13 @@ class city{
   private int n_cars;
   private String begining;
   private Set<cross> crosses;
-  private Set<street> streets;
 
+//construction
   public city(){
     crosses=new HashSet<>();
   }
 
+//the set methods
   public void setNCross(int n){
     n_cross=n;
   }
@@ -155,6 +174,7 @@ class city{
     crosses.add(c);
   }
 
+//the get methods
   public int getNCrosses(){
     return n_cross;
   }
@@ -168,11 +188,6 @@ class city{
     return begining;
   }
 
-  public void imprimir(){
-      for(cross c: crosses){
-        System.out.println(c.toString());
-      }
-  }
 
   public cross getcross(int id){
     for(cross c: crosses){
@@ -182,6 +197,10 @@ class city{
   }
 
 }
+
+//the class car is useful to manage the movements of the car along the city, saving
+//all the cross where the car is situated and determining the next cross which will
+//saved to print it out
 class car{
 
   private ArrayList<ArrayList <String> > movements = new ArrayList<ArrayList <String> >();
@@ -189,6 +208,7 @@ class car{
   private city city_chosen;
   private int n_cars;
 
+  //the constructor
   public car(int n_car,city the_city){
     n_cars=n_car;
     for (int i=0;i<n_car;i++){
@@ -200,12 +220,16 @@ class car{
     }
   }
 
-
+  //the method substrate the cost time of the street to the available time which
+  //there is and also add to the street an updated information to not selected the
+  //same street all the time
   public void addTime(int n,street s_chosen){
     time_spent=time_spent-n;
     s_chosen.passed();
   }
 
+  //this method determine if there is a street available, knowing the time that
+  //left and the cost_time that is in each street
   public boolean isway(){
     for (int i=0;i<n_cars;i++){
         if(!movements.get(i).isEmpty()){
@@ -222,7 +246,8 @@ class car{
       return false;
   }
 
-
+//this is the main method knowing the next cross will print it in each car, updating
+//all the information
   public void travell(){
     int selected_car;
     int cost_time;
@@ -262,12 +287,11 @@ class car{
 
 }
 
-
-
-
-
+//this is the main class which will organize all the information and will be calling
+//all the classes and methods available in the different situation.
 public class car_schedule {
 
+  //this save the information of the first line
   public static void Metadata(String first_line, city the_city){
     String []separate=first_line.split("\\s");
     the_city.setNCross(Integer.parseInt(separate[0]));
@@ -276,6 +300,8 @@ public class car_schedule {
     the_city.setNCar(Integer.parseInt(separate[3]));
     the_city.setBegining(separate[4]);
   }
+  //the following two methos, will update the crosses adjant and the street adjant
+  //to the cross situated
   public static void onedirection(cross cstart,cross cend,street s){
     cstart.addChildCrosses(cend);
     cstart.addChildStreets(s);
@@ -287,6 +313,8 @@ public class car_schedule {
     cend.addChildStreets(s2);
   }
 
+  //this method will save all the information having the first line and a it will
+  //save the crosses and the streets
   public static void saveData(String file,city the_city) throws FileNotFoundException, IOException {
       String line;
       FileReader f = new FileReader(file);
@@ -325,6 +353,7 @@ public class car_schedule {
       buffer.close();
   }
 
+  //this is main method
   public static void main(String[] args) throws IOException {
       int n_cars;
       city the_city = new city();
