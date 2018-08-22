@@ -155,7 +155,15 @@ class city{
     crosses.add(c);
   }
 
-  public int getNCrosses(){return n_cross;}
+  public int getNCrosses(){
+    return n_cross;
+  }
+  public int getNCars(){
+    return n_cars;
+  }
+  public int getVTime(){
+    return v_time;
+  }
 
 
   public void imprimir(){
@@ -174,19 +182,19 @@ class city{
 }
 class car{
 
-  private ArrayList<ArrayList <string>> movements = new ArrayList<ArrayList <string>>();
-  private double time_spent;
+  private ArrayList<ArrayList <String> > movements = new ArrayList<ArrayList <String> >();
+  private int time_spent;
   private city city_chosen;
   private int n_cars;
 
-  public car(n_car,the_city){
-    time_spent=0;
+  public car(int n_car,city the_city){
     n_cars=n_car;
     for (int i=0;i<n_car;i++){
       ArrayList <String> n_movement=new ArrayList <String>();
       n_movement.add("0");
       movements.add(n_movement);
       city_chosen=the_city;
+      time_spent=the_city.getVTime();
     }
   }
 
@@ -195,56 +203,62 @@ class car{
     time_spent=time_spent-n;
   }
 
-  public Bool isway(){
+  public boolean isway(){
     for (int i=0;i<n_cars;i++){
-        if(!movements[i].isEmpty()){
-            int last=movements[i].size()-1;
-            String id=movements[i][last]
-            cross last_c=city_chosen.getcross(id);
+        if(!movements.get(i).isEmpty()){
+            int last=movements.get(i).size()-1;
+            String id=movements.get(i).get(last);
+            cross last_c=city_chosen.getcross(Integer.parseInt(id));
             Set<street> s=last_c.GetChildStreetss();
             for(street t : s){
               int stimation= t.getCostTime();
-              if(stimation>=time_spent){return true;}
+              if(stimation<=time_spent){return true;}
             }
         }
       }
       return false;
   }
 
-  public void choose(int car, double max,cross cend,cross cstart,int selected_car){
-    int last=movements[car].size()-1;
-    String id=movements[i][last]
-    cross last_c=city_chosen.getcross(id);
+  private int selected_car;
+  private int cost_time;
+  private double max;
+  private cross chosen;
+
+  public void choose(int car){
+    int last=movements.get(car).size()-1;
+    String id=movements.get(car).get(last);
+    cross last_c=city_chosen.getcross(Integer.parseInt(id));
     Set<street> s=last_c.GetChildStreetss();
     for(street t : s){
-      double result=t.average()
-
+      double result=t.average();
       if(result >= max && time_spent >= t.getCostTime()){
-        cstart=last_c;
-        cend=t.getCrossEnd();
+        chosen=t.getCrossEnd();
         max=result;
         selected_car=car;
+        cost_time=t.getCostTime();
       }
 
     }
   }
 
-  public void travel(){
-    cross c_last, c_start;
-    int selected_car;
-    double max=0.0;
-    if(isway()){
+  public void travell(){
+    selected_car=9;
+    cost_time=0;
+    max=0.0;
+    while(isway()){
       for (int i=0;i<n_cars;i++){
-          choose(i,max,c_last,c_start,selected_car);
+          choose(i);
       }
+      movements.get(selected_car).add(String.valueOf(chosen.GetID()));
+      addTime(cost_time);
     }
-    else{
-
-    }
-
+      for(ArrayList<String> m: movements){
+        System.out.println(m.size());
+        for(String s: m){
+          System.out.println(s);
+        }
+      }
   }
-
-
 }
 
 
@@ -312,12 +326,14 @@ public class car_schedule {
       }
       buffer.close();
 
-        the_city.imprimir();
+        //the_city.imprimir();
   }
   public static void main(String[] args) throws IOException {
+      int n_cars;
       city the_city = new city();
       saveData("paris_54000.txt",the_city);
-
+      car car_management=new car(the_city.getNCars(),the_city);
+      car_management.travell();
   }
 
 }
