@@ -6,8 +6,10 @@ For more information [Google Hash Code](https://hashcode.withgoogle.com/2014/tas
 
 ## Compilation and Run
    it will last one or half of a minute, depending the espedicfication of the computer. Compilated and run on linux:
-   ´javac car_schedule.java´
-   ´java car_schedule > archivo.txt´
+      
+     ´javac car_schedule.java´
+   
+    ´java car_schedule > archivo.txt´
     
    
 
